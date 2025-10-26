@@ -1,52 +1,91 @@
-import { useEffect, useState } from 'react'
-import { fetchProducts, type Product } from './api/products'
+import { useEffect, useMemo, useState } from 'react'
+import Header from './components/Header'
+import ProductCard from './components/ProductCard'
 import ProductModal from './components/ProductModal'
+import { fetchCategories, fetchProducts, fetchProductsByCategory, type Category, type Product } from './api/products'
 
 export default function App() {
   const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const [search, setSearch] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<Category | 'todos'>('todos')
+  const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [visibleCount, setVisibleCount] = useState(12)
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
   useEffect(() => {
     setLoading(true)
     setError(null)
-    fetchProducts()
-      .then(setProducts)
+    Promise.all([fetchProducts(), fetchCategories()])
+      .then(([prods, cats]) => { setProducts(prods); setCategories(cats) })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
 
-  return (
-    <div className="container">
-      <header className="header">
-        <div className="header-inner">
-          <a className="logo" href="#">Entel Catalog</a>
-          <div className="search" role="search">
-            <input aria-label="Buscar" placeholder="Busca productos" />
-          </div>
-        </div>
-      </header>
+  useEffect(() => {
+    setVisibleCount(12)
+    if (selectedCategory === 'todos') {
+      fetchProducts().then(setProducts).catch((e) => setError(e.message))
+    } else {
+      fetchProductsByCategory(selectedCategory).then(setProducts).catch((e) => setError(e.message))
+    }
+  }, [selectedCategory])
 
-      <main>
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    if (!q) return products
+    return products.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q)
+    )
+  }, [products, search])
+
+  const visible = filtered.slice(0, visibleCount)
+
+  return (
+    <div>
+      <Header searchQuery={search} onSearchChange={setSearch} />
+
+      <main className="container">
         <h1>Productos</h1>
         {loading && <p>Cargando...</p>}
         {error && <p style={{ color: 'var(--color-error)' }}>{error}</p>}
 
-        <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {products.map((p) => (
-            <div key={p.id} className="card">
-              <img className="card-media" src={p.image} alt={p.title} />
-              <div className="card-body">
-                <h3 className="card-title">{p.title}</h3>
-                <p className="card-price">${p.price.toFixed(2)}</p>
-                <div className="card-actions">
-                  <button className="btn btn-primary" onClick={() => setSelectedId(p.id)}>Ver detalle</button>
-                </div>
-              </div>
-            </div>
-          ))}
+        <div className="controls">
+          <select className="select" aria-label="Filtrar por categoría" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value as Category | 'todos')}>
+            <option value="todos">Todas</option>
+            {categories.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+
+          <div className="toggle-group" role="group" aria-label="Vista">
+            <button className="btn" aria-pressed={view === 'grid'} onClick={() => setView('grid')}>Grilla</button>
+            <button className="btn" aria-pressed={view === 'list'} onClick={() => setView('list')}>Lista</button>
+          </div>
+
+          <span style={{ color: 'var(--color-muted)' }}>{filtered.length} resultados</span>
         </div>
+
+        <section className={view === 'grid' ? 'grid' : 'list'}>
+          {visible.map((p) => (
+            <ProductCard
+              key={p.id}
+              product={p}
+              view={view}
+              badge={p.price < 20 ? 'Oferta' : (p.id > 18 ? 'Nuevo' : undefined)}
+              onViewDetail={(id) => setSelectedId(id)}
+            />
+          ))}
+        </section>
+
+        {visible.length < filtered.length && (
+          <button className="btn btn-primary load-more" onClick={() => setVisibleCount((c) => c + 12)}>Cargar más</button>
+        )}
       </main>
 
       {selectedId !== null && (
