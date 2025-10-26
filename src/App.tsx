@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import Header from './components/Header'
+import ProductCard from './components/ProductCard'
 import { fetchProducts, type Product } from './api/products'
 import './App.css'
 
 export default function App() {
   const [products, setProducts] = useState<Product[]>([])
   const [query, setQuery] = useState('')
+  const [selectedId, setSelectedId] = useState<number | null>(null)
 
   useEffect(() => {
     let mounted = true
@@ -31,7 +33,11 @@ export default function App() {
       <main className="container" style={{ paddingTop: 'var(--space-16)' }}>
         <h1>Catálogo</h1>
         <p>Resultados: {filtered.length}</p>
-        {/* Grid y componentes se añadirán en siguientes ramas */}
+        <section className="grid">
+          {filtered.map(p => (
+            <ProductCard key={p.id} product={p} onDetail={setSelectedId} badge={p.price < 20 ? 'Oferta' : undefined} />
+          ))}
+        </section>
       </main>
     </>
   )
