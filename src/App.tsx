@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useMemo, useState } from 'react'
+import Header from './components/Header'
+import { fetchProducts, type Product } from './api/products'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [query, setQuery] = useState('')
+
+  useEffect(() => {
+    let mounted = true
+    fetchProducts().then((data) => {
+      if (mounted) setProducts(data)
+    }).catch(console.error)
+    return () => { mounted = false }
+  }, [])
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return products
+    return products.filter(p => (
+      p.title.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q)
+    ))
+  }, [products, query])
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Header onSearch={setQuery} />
+      <main className="container" style={{ paddingTop: 'var(--space-16)' }}>
+        <h1>Catálogo</h1>
+        <p>Resultados: {filtered.length}</p>
+        {/* Grid y componentes se añadirán en siguientes ramas */}
+      </main>
     </>
   )
 }
-
-export default App
