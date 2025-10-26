@@ -15,6 +15,7 @@ export default function App() {
   const [view, setView] = useState<'grid' | 'list'>('grid')
   const [visibleCount, setVisibleCount] = useState(12)
   const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [offersOnly, setOffersOnly] = useState<boolean>(false)
 
   useEffect(() => {
     setLoading(true)
@@ -36,19 +37,38 @@ export default function App() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    if (!q) return products
-    return products.filter(p =>
-      p.title.toLowerCase().includes(q) ||
-      p.description.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
-    )
-  }, [products, search])
+    let base = products
+
+    if (q) {
+      base = base.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      )
+    }
+
+    if (offersOnly) {
+      base = base.filter(p => p.price < 20)
+    }
+
+    return base
+  }, [products, search, offersOnly])
 
   const visible = filtered.slice(0, visibleCount)
 
+  const handleClickOffers = () => {
+    
+    setSelectedCategory('todos')
+    setOffersOnly(true)
+    const main = document.querySelector('main')
+    main?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const clearOffers = () => setOffersOnly(false)
+
   return (
     <div>
-      <Header searchQuery={search} onSearchChange={setSearch} />
+      <Header searchQuery={search} onSearchChange={setSearch} onClickOffers={handleClickOffers} />
 
       <main className="container">
         <h1>Productos</h1>
@@ -69,6 +89,12 @@ export default function App() {
           </div>
 
           <span style={{ color: 'var(--color-muted)' }}>{filtered.length} resultados</span>
+
+          {offersOnly && (
+            <button className="btn" onClick={clearOffers} title="Quitar filtro de ofertas" style={{ marginLeft: 'var(--space-8)' }}>
+              Quitar ofertas
+            </button>
+          )}
         </div>
 
         <section className={view === 'grid' ? 'grid' : 'list'}>
@@ -94,3 +120,5 @@ export default function App() {
     </div>
   )
 }
+
+

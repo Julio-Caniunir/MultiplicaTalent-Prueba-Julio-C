@@ -3,24 +3,38 @@ import { useState } from 'react'
 type Props = {
   searchQuery: string
   onSearchChange: (value: string) => void
+  onClickOffers: () => void
 }
 
-export default function Header({ searchQuery, onSearchChange }: Props) {
+export default function Header({ searchQuery, onSearchChange, onClickOffers }: Props) {
   const [open, setOpen] = useState(false)
+
+  const handleNavClick = (section: string) => {
+    if (section === 'contacto') {
+      alert('Contacto: info@entel.com | Tel: +56 2 2360 0123')
+    }
+    setOpen(false)
+  }
 
   return (
     <header className="header">
       <div className="container header-inner">
-        <a className="logo" href="#">Entel Catalog</a>
+        <a className="logo" href="#" onClick={() => window.location.reload()}>
+          Catálogo Entel
+        </a>
 
-        <button aria-label="Abrir menú" className="btn" onClick={() => setOpen(!open)}>
+        <button 
+          aria-label="Abrir menú" 
+          className="btn mobile-menu-btn" 
+          onClick={() => setOpen(!open)}
+        >
           ☰
         </button>
 
         <nav className="nav" aria-label="Principal">
-          <a href="#">Inicio</a>
-          <a href="#">Ofertas</a>
-          <a href="#">Contacto</a>
+          <a href="#" onClick={() => window.location.reload()}>Inicio</a>
+          <a href="#" onClick={() => { onClickOffers(); setOpen(false) }}>Ofertas</a>
+          <a href="#" onClick={() => handleNavClick('contacto')}>Contacto</a>
         </nav>
 
         <div className="search" role="search">
@@ -34,11 +48,11 @@ export default function Header({ searchQuery, onSearchChange }: Props) {
       </div>
 
       {open && (
-        <div className="container" style={{ paddingBottom: 'var(--space-16)' }}>
-          <nav aria-label="Principal móvil">
-            <a href="#" style={{ marginRight: 'var(--space-16)' }}>Inicio</a>
-            <a href="#" style={{ marginRight: 'var(--space-16)' }}>Ofertas</a>
-            <a href="#">Contacto</a>
+        <div className="container">
+          <nav className="mobile-nav" aria-label="Principal móvil" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-8)', paddingBottom: 'var(--space-16)' }}>
+            <a href="#" onClick={() => { window.location.reload(); setOpen(false) }}>Inicio</a>
+            <a href="#" onClick={() => { onClickOffers(); setOpen(false) }}>Ofertas</a>
+            <a href="#" onClick={() => handleNavClick('contacto')}>Contacto</a>
           </nav>
         </div>
       )}

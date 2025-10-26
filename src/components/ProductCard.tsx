@@ -13,12 +13,12 @@ export default function ProductCard({ product, badge, onViewDetail, view }: Prop
 
   return (
     <div className={view === 'list' ? 'card list-item' : 'card'}>
-      {badge && <span className="badge" aria-label={`Badge: ${badge}`}>{badge}</span>}
+      {badge && <span className="badge" aria-label={`Etiqueta: ${badge}`}>{badge}</span>}
       <img className="card-media" src={product.image} alt={product.title} />
       <div className="card-body">
         <h3 className="card-title">{product.title}</h3>
         <p>{short}</p>
-        <div className="rating" aria-label={`Rating: ${stars} de 5`}>
+        <div className="rating" aria-label={`Valoración: ${stars} de 5`}>
           {Array.from({ length: 5 }).map((_, i) => (
             <span key={i}>{i < stars ? '★' : '☆'}</span>
           ))}
@@ -33,3 +33,4 @@ export default function ProductCard({ product, badge, onViewDetail, view }: Prop
     </div>
   )
 }
+

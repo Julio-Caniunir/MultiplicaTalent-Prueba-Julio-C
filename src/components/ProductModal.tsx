@@ -19,29 +19,93 @@ export default function ProductModal({ id, onClose }: Props) {
 
   return (
     <div role="dialog" aria-modal className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>Detalle de producto</h2>
-          <button className="btn" onClick={onClose}>Cerrar</button>
+      <div className="modal-professional" onClick={(e) => e.stopPropagation()}>
+        
+        <div className="modal-header">
+          <button className="modal-close" onClick={onClose} aria-label="Cerrar modal">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
-        {loading && <p>Loading...</p>}
-        {error && <p style={{ color: 'var(--color-error)' }}>{error}</p>}
+
+        
+        {loading && (
+          <div className="modal-loading">
+            <div className="loading-spinner"></div>
+            <p>Cargando producto...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="modal-error">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <p>{error}</p>
+          </div>
+        )}
+
+        
         {product && (
-          <div style={{ display: 'grid', gap: 'var(--space-16)', gridTemplateColumns: '1fr 2fr' }}>
-            <img src={product.image} alt={product.title} style={{ width: '100%', background: 'var(--color-surface)', borderRadius: 'var(--radius-md)' }} />
-            <div>
-              <h3 style={{ marginTop: 0 }}>{product.title}</h3>
-              <p>{product.description}</p>
-              <p className="card-price">${product.price.toFixed(2)}</p>
-              <div className="rating" aria-label={`Rating: ${product.rating.rate} de 5`}>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i}>{i < Math.round(product.rating.rate) ? '★' : '☆'}</span>
-                ))}
+          <div className="modal-content">
+            
+            <div className="modal-image-section">
+              <div className="modal-image-container">
+                <img src={product.image} alt={product.title} className="modal-image" />
               </div>
-              <ul>
-                <li><strong>Categoría:</strong> {product.category}</li>
-                <li><strong>Reseñas:</strong> {product.rating.count}</li>
-              </ul>
+            </div>
+
+            
+            <div className="modal-info-section">
+              <div className="modal-category">
+                <span className="category-badge">{product.category}</span>
+              </div>
+              
+              <h1 className="modal-title">{product.title}</h1>
+              
+              <div className="modal-rating">
+                <div className="rating-stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} className={i < Math.round(product.rating.rate) ? 'star-filled' : 'star-empty'}>
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <span className="rating-text">
+                  {product.rating.rate} ({product.rating.count} reseñas)
+                </span>
+              </div>
+
+              <div className="modal-price">
+                <span className="price-currency">$</span>
+                <span className="price-amount">{product.price.toFixed(2)}</span>
+              </div>
+
+              <div className="modal-description">
+                <h3>Descripción</h3>
+                <p>{product.description}</p>
+              </div>
+
+              <div className="modal-actions">
+                <button className="btn btn-primary modal-cta">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                  </svg>
+                  Agregar al carrito
+                </button>
+                <button className="btn modal-wishlist">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                  </svg>
+                  Guardar
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -49,3 +113,4 @@ export default function ProductModal({ id, onClose }: Props) {
     </div>
   )
 }
+

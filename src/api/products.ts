@@ -33,3 +33,4 @@ export async function fetchProductsByCategory(category: Category): Promise<Produ
   if (!res.ok) throw new Error('No se pudieron cargar los productos de la categoría')
   return res.json()
 }
+
