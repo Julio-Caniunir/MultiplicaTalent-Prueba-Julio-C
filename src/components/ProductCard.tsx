@@ -2,12 +2,11 @@ import type { Product } from '../api/products'
 
 type Props = {
   product: Product
-  isSelected?: boolean
   onClick?: () => void
   badge?: 'Nuevo' | 'Oferta'
 }
 
-export default function ProductCard({ product, isSelected, onClick, badge }: Props) {
+export default function ProductCard({ product, onClick, badge }: Props) {
   return (
     <article className="card" aria-label={product.title}>
       {badge && <span className="badge" aria-label={badge}>{badge}</span>}

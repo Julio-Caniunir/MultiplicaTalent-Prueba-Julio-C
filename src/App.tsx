@@ -17,7 +17,6 @@ export default function App() {
   const [products, setProducts] = useState<Product[]>([])
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([])
   const [query, setQuery] = useState('')
-  const [selectedId, setSelectedId] = useState<number | null>(null)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -125,7 +124,6 @@ export default function App() {
               <ProductCard
                 key={product.id}
                 product={product}
-                isSelected={selectedId === product.id}
                 onClick={() => handleProductClick(product)}
               />
             ))}
