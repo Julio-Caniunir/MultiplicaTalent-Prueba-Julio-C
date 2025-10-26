@@ -1,10 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useMemo, useState } from 'react'
+import Header from './components/Header'
+import ProductCard from './components/ProductCard'
+import ProductModal from './components/ProductModal'
+import { fetchCategories, fetchProducts, fetchProductsByCategory, type Category, type Product } from './api/products'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [products, setProducts] = useState<Product[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const [search, setSearch] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<Category | 'todos'>('todos')
+  const [view, setView] = useState<'grid' | 'list'>('grid')
+  const [visibleCount, setVisibleCount] = useState(12)
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [offersOnly, setOffersOnly] = useState<boolean>(false)
+
+  useEffect(() => {
+    setLoading(true)
+    setError(null)
+    Promise.all([fetchProducts(), fetchCategories()])
+      .then(([prods, cats]) => { setProducts(prods); setCategories(cats) })
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [])
+
+  useEffect(() => {
+    setVisibleCount(12)
+    if (selectedCategory === 'todos') {
+      fetchProducts().then(setProducts).catch((e) => setError(e.message))
+    } else {
+      fetchProductsByCategory(selectedCategory).then(setProducts).catch((e) => setError(e.message))
+    }
+  }, [selectedCategory])
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase()
+    let base = products
+
+    if (q) {
+      base = base.filter(p =>
+        p.title.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q)
+      )
+    }
+
+    if (offersOnly) {
+      base = base.filter(p => p.price < 20)
+    }
+
+    return base
+  }, [products, search, offersOnly])
+
+  const visible = filtered.slice(0, visibleCount)
+
+  const handleClickOffers = () => {
+    
+    setSelectedCategory('todos')
+    setOffersOnly(true)
+    const main = document.querySelector('main')
+    main?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const clearOffers = () => setOffersOnly(false)
 
   return (
     <>
@@ -32,4 +92,4 @@ function App() {
   )
 }
 
-export default App
+
