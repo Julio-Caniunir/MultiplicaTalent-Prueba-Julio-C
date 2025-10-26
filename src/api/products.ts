@@ -1,8 +1,8 @@
 export type Product = {
   id: number
   title: string
-  description: string
   price: number
+  description: string
   category: string
   image: string
   rating: { rate: number; count: number }
@@ -10,27 +10,28 @@ export type Product = {
 
 export type Category = string
 
+const BASE = 'https://fakestoreapi.com'
+
 export async function fetchProducts(): Promise<Product[]> {
-  const res = await fetch('https://fakestoreapi.com/products')
-  if (!res.ok) throw new Error('No se pudieron cargar los productos')
+  const res = await fetch(`${BASE}/products`)
+  if (!res.ok) throw new Error('Error al obtener productos')
   return res.json()
 }
 
 export async function fetchProduct(id: number): Promise<Product> {
-  const res = await fetch(`https://fakestoreapi.com/products/${id}`)
-  if (!res.ok) throw new Error('No se pudo cargar el producto')
+  const res = await fetch(`${BASE}/products/${id}`)
+  if (!res.ok) throw new Error('Error al obtener producto')
   return res.json()
 }
 
 export async function fetchCategories(): Promise<Category[]> {
-  const res = await fetch('https://fakestoreapi.com/products/categories')
-  if (!res.ok) throw new Error('No se pudieron cargar las categorías')
+  const res = await fetch(`${BASE}/products/categories`)
+  if (!res.ok) throw new Error('Error al obtener categorías')
   return res.json()
 }
 
-export async function fetchProductsByCategory(category: Category): Promise<Product[]> {
-  const res = await fetch(`https://fakestoreapi.com/products/category/${encodeURIComponent(category)}`)
-  if (!res.ok) throw new Error('No se pudieron cargar los productos de la categoría')
+export async function fetchProductsByCategory(category: string): Promise<Product[]> {
+  const res = await fetch(`${BASE}/products/category/${encodeURIComponent(category)}`)
+  if (!res.ok) throw new Error('Error al filtrar por categoría')
   return res.json()
 }
-
