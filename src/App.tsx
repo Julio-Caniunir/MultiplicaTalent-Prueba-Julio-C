@@ -67,57 +67,28 @@ export default function App() {
   const clearOffers = () => setOffersOnly(false)
 
   return (
-    <div>
-      <Header searchQuery={search} onSearchChange={setSearch} onClickOffers={handleClickOffers} />
-
-      <main className="container">
-        <h1>Productos</h1>
-        {loading && <p>Cargando...</p>}
-        {error && <p style={{ color: 'var(--color-error)' }}>{error}</p>}
-
-        <div className="controls">
-          <select className="select" aria-label="Filtrar por categoría" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value as Category | 'todos')}>
-            <option value="todos">Todas</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-
-          <div className="toggle-group" role="group" aria-label="Vista">
-            <button className="btn" aria-pressed={view === 'grid'} onClick={() => setView('grid')}>Grilla</button>
-            <button className="btn" aria-pressed={view === 'list'} onClick={() => setView('list')}>Lista</button>
-          </div>
-
-          <span style={{ color: 'var(--color-muted)' }}>{filtered.length} resultados</span>
-
-          {offersOnly && (
-            <button className="btn" onClick={clearOffers} title="Quitar filtro de ofertas" style={{ marginLeft: 'var(--space-8)' }}>
-              Quitar ofertas
-            </button>
-          )}
-        </div>
-
-        <section className={view === 'grid' ? 'grid' : 'list'}>
-          {visible.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              view={view}
-              badge={p.price < 20 ? 'Oferta' : (p.id > 18 ? 'Nuevo' : undefined)}
-              onViewDetail={(id) => setSelectedId(id)}
-            />
-          ))}
-        </section>
-
-        {visible.length < filtered.length && (
-          <button className="btn btn-primary load-more" onClick={() => setVisibleCount((c) => c + 12)}>Cargar más</button>
-        )}
-      </main>
-
-      {selectedId !== null && (
-        <ProductModal id={selectedId} onClose={() => setSelectedId(null)} />
-      )}
-    </div>
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Catálogo Entel</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
   )
 }
 
