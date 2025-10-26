@@ -1,36 +1,31 @@
-import { type Product } from '../api/products'
+import { Product } from '../api/products'
 
 type Props = {
   product: Product
-  badge?: string
-  onViewDetail: (id: number) => void
-  view: 'grid' | 'list'
+  onDetail: (id: number) => void
+  badge?: 'Nuevo' | 'Oferta'
 }
 
-export default function ProductCard({ product, badge, onViewDetail, view }: Props) {
-  const stars = Math.round(product.rating?.rate ?? 0)
-  const short = product.description.length > 140 ? product.description.slice(0, 140) + '…' : product.description
-
+export default function ProductCard({ product, onDetail, badge }: Props) {
   return (
-    <div className={view === 'list' ? 'card list-item' : 'card'}>
-      {badge && <span className="badge" aria-label={`Etiqueta: ${badge}`}>{badge}</span>}
-      <img className="card-media" src={product.image} alt={product.title} />
+    <article className="card" aria-label={product.title}>
+      {badge && <span className="badge" aria-label={badge}>{badge}</span>}
+      <img className="card-media" src={product.image} alt={product.title} loading="lazy" />
       <div className="card-body">
         <h3 className="card-title">{product.title}</h3>
-        <p>{short}</p>
-        <div className="rating" aria-label={`Valoración: ${stars} de 5`}>
+        <p>{product.description.slice(0, 120)}...</p>
+        <div className="rating" aria-label={`Rating: ${product.rating.rate} de 5`}>
           {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i}>{i < stars ? '★' : '☆'}</span>
+            <span key={i}>{i < Math.round(product.rating.rate) ? '★' : '☆'}</span>
           ))}
         </div>
-        <p className="card-price">${product.price.toFixed(2)}</p>
+        <div className="card-price">${product.price.toFixed(2)}</div>
         <div className="card-actions">
-          <button className="btn btn-primary" onClick={() => onViewDetail(product.id)}>
+          <button className="btn btn-primary" onClick={() => onDetail(product.id)}>
             Ver detalle
           </button>
         </div>
       </div>
-    </div>
+    </article>
   )
 }
-
