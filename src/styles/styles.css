@@ -91,6 +91,10 @@ p { font-size: var(--font-md); line-height: 1.6; }
 /* Modal */
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; padding: var(--space-16); }
 .modal { width: min(960px, 100%); background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: var(--space-16); }
+.controls { display: flex; gap: var(--space-16); align-items: center; margin: var(--space-16) 0; }
+.select { padding: var(--space-8); border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-bg); }
+.toggle-group { display: flex; gap: var(--space-8); }
+.load-more { display: block; margin: var(--space-16) auto; }
 
 /* Responsive */
 @media (min-width: 320px) and (max-width: 767px) { .grid { grid-template-columns: 1fr; } }
